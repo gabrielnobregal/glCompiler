@@ -5,12 +5,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 
+import br.glcompiler.lex.Token.Kind;
+
 public class GLScanner implements Scanner {
 
 	private char lac; // lookahead character
 	private Reader reader;
 	private Localization localization;
-
+ 
 	private static final char EOL = '\n';
 	private static final char EOF_CHAR = '\u0080';
 
@@ -41,59 +43,59 @@ public class GLScanner implements Scanner {
 	}
 
 	private void skipBlankChars() {
-		// Includes all type of tabulation: see: http://unicode-table.com/
+		// Includes all types of tabulation see: http://unicode-table.com/
 		while (lac <= ' ') {
 			nextChar();
 		}
 	}
 
+	private Token readName() {
+    
+		StringBuilder lexeme = new StringBuilder();
+		
+        while (Character.isLetterOrDigit(lac)) {
+            lexeme.append(lac);
+            nextChar();
+        }
+        
+        return new Token(Kind.NUMBER, lexeme.toString(), localization);
+    }
+	
+	private Token readNumber() {
+		
+        StringBuilder lexeme = new StringBuilder();
+        
+        while (Character.isDigit(lac)) {
+            lexeme.append(lac);
+            nextChar();
+        }   
+        
+        return new Token(Kind.NUMBER, lexeme.toString(), localization);
+	}
+	
+	private Token readCharacter() {
+		return null;
+	}
+	
 	@Override
 	public Token nextToken() {
 
 		skipBlankChars();
 
-		Token token = new Token(localization);
-
-		if (lac == EOF_CHAR) {
-			token.setKind(Token.Kind.EOF);
-		} 
-		
-		/*
-		else 
+		Token token = null;
+		 
 		if (Character.isDigit(lac)) {
-			readNumber(token);
+			token = readNumber(); 
 		} else 
 		if (Character.isLetter(lac)) {
-			readName(token);
+			token = readName();
 		} else 
-		if (lac == '\'') {
-			readCharacter(token);
+		if (lac == '\"') {
+			token = readCharacter();
 		} else 
-		if (lac == '/') { // This test is not include in readOperator
-			// because of recursion (return next())
-			nextChar();
-			if (lac == '/') {
-				// skip commentary
-				do {
-					nextChar();
-				} while (c != EOL && c != EOF_CHAR);
-				nextChar();
-				return next(); // return next token (commentary is not a token)
-			} else {
-				token.kind = Token.Kind.SLASH;
-				token.string = "/";
-			}
-		} else if (!readOperator(token)) {
-			// An invalid operator that begins with ! but differ
-			// from != could been read in readOperator.
-			// If so, token is already built, so token.string is NOT empty.
-			if (token.string.isEmpty()) {
-				token.kind = Token.Kind.UNKNOWN;
-				token.errorMessage = ERROR_INVALID_SYMBOL;
-				nextChar();
-			}
+		if (lac == EOF_CHAR) {
+			token = new Token(Token.Kind.EOF, localization); 
 		}
-		*/
 		return token;
 	}
 

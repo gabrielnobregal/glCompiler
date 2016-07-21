@@ -1,6 +1,5 @@
 package br.glcompiler.lex;
 
-import java.io.StringReader;
 import org.junit.Test;
 import junit.framework.TestCase;
 
@@ -20,14 +19,12 @@ public class GLScannerTest extends TestCase {
 	
 	@SuppressWarnings("static-access")
 	@Test
-	public void basicScannerTest() {		
-		
+	public void basicScannerTest() {				
 		// First set of test 
-		tokenSetAssert(new GLScannerWrapper("if(a<=  5){}"), tk.IF, tk.LEFT_PARENTHESIS, 
-															 tk.IDENTIFIER, tk.LESS_EQUAL, 
-															 tk.NUMBER, tk.LEFT_BRACE, 
-															 tk.RIGHT_BRACE );	
-		
+		tokenSetAssert(new GLScannerWrapper("if(a <=  5){}"), tk.IF, tk.LEFT_PARENTHESIS, 
+															  tk.IDENTIFIER, tk.LESS_EQUAL, 
+															  tk.NUMBER, tk.LEFT_BRACE, 
+															  tk.RIGHT_BRACE );			
 		
 	}
 	

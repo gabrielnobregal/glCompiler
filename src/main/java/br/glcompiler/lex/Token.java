@@ -2,10 +2,9 @@ package br.glcompiler.lex;
 
 public class Token {
 	
-	private String lexeme;
 	private Kind kind;
-	private Localization localization;
-		
+	private String lexeme;	
+	private Localization localization;		
 	
 	public static enum Kind {
 		
@@ -21,6 +20,23 @@ public class Token {
         PERIOD, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, LEFT_BRACKET,
         RIGHT_BRACKET, LEFT_BRACE, RIGHT_BRACE
     }
+	
+	public Token() {
+		
+	}		
+
+	public Token(Kind kind, String lexeme, Localization localization) {
+		super();
+		this.kind = kind;
+		this.lexeme = lexeme;
+		this.localization = localization;
+	}	
+
+	public Token(Kind kind, Localization localization) {
+		super();
+		this.kind = kind;
+		this.localization = localization;
+	}
 
 	public Token(Localization localization) {
 		this.localization = localization;
