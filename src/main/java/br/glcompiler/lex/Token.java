@@ -1,25 +1,64 @@
 package br.glcompiler.lex;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
+
 public class Token {
 	
 	private Kind kind;
 	private String lexeme;	
 	private Localization localization;		
 	
+	private static enum LexGroup {
+		BASIC, KEYWORD, OPERATOR
+	}
+	
 	public static enum Kind {
-		
-        UNKNOWN, EOF, IDENTIFIER, NUMBER, CHARACTER,
+		// basic
+        UNKNOWN("na", LexGroup.BASIC), EOF("eof", LexGroup.BASIC), IDENTIFIER("identifier", LexGroup.BASIC), NUMBER("number", LexGroup.BASIC), 
+        CHARACTER("character", LexGroup.BASIC),
         
         // keywords
-        CLASS, ELSE, IF, NEW, PRINT, PROGRAM, READ,
-        RETURN, VOID, WHILE,
+        CLASS("", LexGroup.KEYWORD), ELSE("senao", LexGroup.KEYWORD), IF("se", LexGroup.KEYWORD), NEW("new", LexGroup.KEYWORD), 
+        RETURN("retornar", LexGroup.KEYWORD), WHILE("enquanto", LexGroup.KEYWORD), IMPORT("importar", LexGroup.KEYWORD),
         
         // operators
-        PLUS, MINUS, TIMES, SLASH, REMAINDER, EQUAL, NOT_EQUAL, LESS,
-        LESS_EQUAL, GREATER, GREATER_EQUAL, ASSIGN, SEMICOLON, COMMA,
-        PERIOD, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, LEFT_BRACKET,
-        RIGHT_BRACKET, LEFT_BRACE, RIGHT_BRACE
+        PLUS("+", LexGroup.OPERATOR), MINUS("-", LexGroup.OPERATOR), TIMES("*", LexGroup.OPERATOR), SLASH("/", LexGroup.OPERATOR), 
+        REMAINDER("\\", LexGroup.OPERATOR), EQUAL("=", LexGroup.OPERATOR), NOT_EQUAL("!=", LexGroup.OPERATOR), 
+        LESS("<", LexGroup.OPERATOR), LESS_EQUAL("<=", LexGroup.OPERATOR), GREATER(">", LexGroup.OPERATOR), 
+        GREATER_EQUAL(">=", LexGroup.OPERATOR), ASSIGN("=", LexGroup.OPERATOR), SEMICOLON(";", LexGroup.OPERATOR), COMMA(";", LexGroup.OPERATOR),
+        PERIOD(".", LexGroup.OPERATOR), LEFT_PARENTHESIS("(", LexGroup.OPERATOR), RIGHT_PARENTHESIS(")", LexGroup.OPERATOR), 
+        LEFT_BRACKET("[", LexGroup.OPERATOR), RIGHT_BRACKET("]", LexGroup.OPERATOR), LEFT_BRACE("{", LexGroup.OPERATOR), 
+        RIGHT_BRACE("}", LexGroup.OPERATOR);
+		
+		private String value;
+		private LexGroup group;
+		
+		private Kind(String value, LexGroup group) {
+			this.value = value;
+			this.group = group;
+		}
+		
+		public String getValue() {
+			return this.value;
+		}
+		
+		public LexGroup getGroup() {
+			return group;
+		}
     }
+	
+	private final static Map<String, Kind> basicMap = new HashMap<>();
+	private final static Map<String, Kind> keywordMap = new HashMap<>();
+	private final static Map<String, Kind> operatorMap = new HashMap<>();
+		
+	static {
+		constructMap(basicMap, LexGroup.BASIC);
+		constructMap(keywordMap, LexGroup.KEYWORD);
+		constructMap(operatorMap, LexGroup.OPERATOR);	
+	}	
 	
 	public Token() {
 		
@@ -58,8 +97,33 @@ public class Token {
 		this.kind = kind;
 	}
 	
+	public static Kind getKeywordKind(String lexeme) {
+		return keywordMap.containsKey(lexeme) ? keywordMap.get(lexeme) : Kind.IDENTIFIER; //TODO: Retornar um tipo nao definido caso nao encotre
+	}
 	
+	public static Kind getOperatorKind(String lexeme) {
+		return operatorMap.get(lexeme); //TODO: Retornar um tipo nao definido caso nao encotre
+	}
 	
+	public static Kind getBasicKind(String lexeme) {
+		return basicMap.get(lexeme); //TODO: Retornar um tipo nao definido caso nao encotre
+	}
 	
+	public static Kind getKind(String lexeme) {
+		return Stream.of(keywordMap.get(lexeme), operatorMap.get(lexeme), basicMap.get(lexeme)).
+			   filter(Objects::nonNull).findFirst().orElse(Kind.UNKNOWN);
+	}	
+	
+	public static boolean hasDoubleCharOperatorPrefix(char c) {
+		return c == '=' || c == '<' || c == '>' || c == '!';
+	}
+	
+	private static void constructMap(Map<String, Kind> map, LexGroup group) {		
+		for(Kind k : Kind.values()) {
+			if(k.getGroup() == group) {
+				map.put(k.getValue(), k);
+			}
+		}
+	}
 	
 }

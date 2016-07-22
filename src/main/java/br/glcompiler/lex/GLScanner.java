@@ -1,13 +1,15 @@
 package br.glcompiler.lex;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-
+import org.apache.log4j.Logger;
 import br.glcompiler.lex.Token.Kind;
+import static br.glcompiler.lex.Token.*;
 
 public class GLScanner implements Scanner {
+	
+	private Logger logger = Logger.getLogger(GLScanner.class);	
 
 	private char lac; // lookahead character
 	private Reader reader;
@@ -20,8 +22,9 @@ public class GLScanner implements Scanner {
 	}
 
 	public GLScanner(Reader reader) {
-		reader = new BufferedReader(reader);
+		this.reader = reader;
 		localization = new Localization();
+		nextChar();		
 	}
 
 	private void nextChar() {
@@ -56,9 +59,9 @@ public class GLScanner implements Scanner {
         while (Character.isLetterOrDigit(lac)) {
             lexeme.append(lac);
             nextChar();
-        }
+        }               
         
-        return new Token(Kind.NUMBER, lexeme.toString(), localization);
+        return new Token(Token.getKeywordKind(lexeme.toString()), lexeme.toString(), localization); 
     }
 	
 	private Token readNumber() {
@@ -73,6 +76,31 @@ public class GLScanner implements Scanner {
         return new Token(Kind.NUMBER, lexeme.toString(), localization);
 	}
 	
+
+	private Token readOperator() {		
+        StringBuilder lexeme = new StringBuilder(2);
+        String prefix = "" + lac;
+        Kind lexKind =  Token.getOperatorKind("" + prefix);
+        
+        if(Token.hasDoubleCharOperatorPrefix(lac)) {
+        	
+        	lexeme.append(lac);
+        	nextChar();
+        	lexeme.append(lac);
+        	    
+        	lexKind = Token.getOperatorKind(lexeme.toString());
+        	
+        	if(lexKind != Kind.UNKNOWN) {
+        		nextChar();
+        	}
+        } else {
+        	nextChar();
+        }       
+        
+        return new Token(lexKind, lexeme.toString(), localization);
+	}
+	
+	
 	private Token readCharacter() {
 		return null;
 	}
@@ -83,19 +111,23 @@ public class GLScanner implements Scanner {
 		skipBlankChars();
 
 		Token token = null;
-		 
+		
+		if (lac == EOF_CHAR) {
+			token = new Token(Token.Kind.EOF, localization); 
+		} else
 		if (Character.isDigit(lac)) {
 			token = readNumber(); 
 		} else 
 		if (Character.isLetter(lac)) {
 			token = readName();
-		} else 
+		} else			
 		if (lac == '\"') {
 			token = readCharacter();
-		} else 
-		if (lac == EOF_CHAR) {
-			token = new Token(Token.Kind.EOF, localization); 
+		} else {
+			token = readOperator();
 		}
+			
+		
 		return token;
 	}
 
