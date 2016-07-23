@@ -17,21 +17,23 @@ public class Token {
 	
 	public static enum Kind {
 		// basic
-        UNKNOWN("na", LexGroup.BASIC), EOF("eof", LexGroup.BASIC), IDENTIFIER("identifier", LexGroup.BASIC), NUMBER("number", LexGroup.BASIC), 
-        CHARACTER("character", LexGroup.BASIC),
+        UNKNOWN("na", LexGroup.BASIC), EOF("eof", LexGroup.BASIC), IDENTIFIER("identifier", LexGroup.BASIC), NUMBER("literal_number", LexGroup.BASIC), 
+        CHARACTER("literal_character", LexGroup.BASIC),STRING("literal_string", LexGroup.BASIC),
         
         // keywords
-        CLASS("", LexGroup.KEYWORD), ELSE("senao", LexGroup.KEYWORD), IF("se", LexGroup.KEYWORD), NEW("new", LexGroup.KEYWORD), 
+        CLASS("classe", LexGroup.KEYWORD), ELSE("senao", LexGroup.KEYWORD), IF("se", LexGroup.KEYWORD), NEW("new", LexGroup.KEYWORD), 
         RETURN("retornar", LexGroup.KEYWORD), WHILE("enquanto", LexGroup.KEYWORD), IMPORT("importar", LexGroup.KEYWORD),
+        INTEGER("inteiro", LexGroup.KEYWORD), TEXT("texto", LexGroup.KEYWORD), FLOAT("decimal", LexGroup.KEYWORD),
+        METHOD("metodo", LexGroup.KEYWORD),
         
         // operators
         PLUS("+", LexGroup.OPERATOR), MINUS("-", LexGroup.OPERATOR), TIMES("*", LexGroup.OPERATOR), SLASH("/", LexGroup.OPERATOR), 
-        REMAINDER("\\", LexGroup.OPERATOR), EQUAL("=", LexGroup.OPERATOR), NOT_EQUAL("!=", LexGroup.OPERATOR), 
+        REMAINDER("\\", LexGroup.OPERATOR), EQUAL("==", LexGroup.OPERATOR), NOT_EQUAL("!=", LexGroup.OPERATOR), 
         LESS("<", LexGroup.OPERATOR), LESS_EQUAL("<=", LexGroup.OPERATOR), GREATER(">", LexGroup.OPERATOR), 
-        GREATER_EQUAL(">=", LexGroup.OPERATOR), ASSIGN("=", LexGroup.OPERATOR), SEMICOLON(";", LexGroup.OPERATOR), COMMA(";", LexGroup.OPERATOR),
+        GREATER_EQUAL(">=", LexGroup.OPERATOR), ASSIGN("=", LexGroup.OPERATOR), SEMICOLON(";", LexGroup.OPERATOR), COMMA(",", LexGroup.OPERATOR),
         PERIOD(".", LexGroup.OPERATOR), LEFT_PARENTHESIS("(", LexGroup.OPERATOR), RIGHT_PARENTHESIS(")", LexGroup.OPERATOR), 
         LEFT_BRACKET("[", LexGroup.OPERATOR), RIGHT_BRACKET("]", LexGroup.OPERATOR), LEFT_BRACE("{", LexGroup.OPERATOR), 
-        RIGHT_BRACE("}", LexGroup.OPERATOR);
+        RIGHT_BRACE("}", LexGroup.OPERATOR), DOUBLE_QUOTES("\"", LexGroup.OPERATOR);
 		
 		private String value;
 		private LexGroup group;
@@ -98,15 +100,17 @@ public class Token {
 	}
 	
 	public static Kind getKeywordKind(String lexeme) {
-		return keywordMap.containsKey(lexeme) ? keywordMap.get(lexeme) : Kind.IDENTIFIER; //TODO: Retornar um tipo nao definido caso nao encotre
+		return keywordMap.containsKey(lexeme) ? keywordMap.get(lexeme) : Kind.IDENTIFIER; 
 	}
 	
 	public static Kind getOperatorKind(String lexeme) {
-		return operatorMap.get(lexeme); //TODO: Retornar um tipo nao definido caso nao encotre
+		Kind k = operatorMap.get(lexeme);
+		return  k == null ? Kind.UNKNOWN : k;
 	}
 	
 	public static Kind getBasicKind(String lexeme) {
-		return basicMap.get(lexeme); //TODO: Retornar um tipo nao definido caso nao encotre
+		Kind k = basicMap.get(lexeme);
+		return  k == null ? Kind.UNKNOWN : k; 
 	}
 	
 	public static Kind getKind(String lexeme) {
@@ -124,6 +128,11 @@ public class Token {
 				map.put(k.getValue(), k);
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "{" +this.kind.name() + ","  + this.kind.value + "," + this.lexeme + "}";		
 	}
 	
 }

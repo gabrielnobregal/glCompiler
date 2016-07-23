@@ -9,12 +9,16 @@ import static br.glcompiler.lex.Token.*;
 
 public class GLScanner implements Scanner {
 	
-	private Logger logger = Logger.getLogger(GLScanner.class);	
+	//private Logger logger = Logger.getLogger(GLScanner.class);	
 
 	private char lac; // lookahead character
+	
 	private Reader reader;
 	private Localization localization;
- 
+	
+	private int doubleQuotesNumber;
+	private Token lastToken;
+	
 	private static final char EOL = '\n';
 	private static final char EOF_CHAR = '\u0080';
 
@@ -24,7 +28,8 @@ public class GLScanner implements Scanner {
 	public GLScanner(Reader reader) {
 		this.reader = reader;
 		localization = new Localization();
-		nextChar();		
+		nextChar();	
+		lastToken = new Token(Kind.UNKNOWN, localization);
 	}
 
 	private void nextChar() {
@@ -77,10 +82,26 @@ public class GLScanner implements Scanner {
 	}
 	
 
+	private Token readString() {
+		StringBuilder lexeme = new StringBuilder();		
+		
+		do {
+			lexeme.append(lac);
+			nextChar();
+		} while(lac != '\"' && lac != EOL );
+		
+		return new Token(Kind.STRING, lexeme.toString(), localization);
+	}
+	
+	private boolean hasDoubleQuotesOpened() {
+		return (doubleQuotesNumber % 2 == 1 && lastToken.getKind() == Kind.DOUBLE_QUOTES);
+	}
+	
 	private Token readOperator() {		
         StringBuilder lexeme = new StringBuilder(2);
         String prefix = "" + lac;
         Kind lexKind =  Token.getOperatorKind("" + prefix);
+        Kind lookAheadKind;
         
         if(Token.hasDoubleCharOperatorPrefix(lac)) {
         	
@@ -88,47 +109,54 @@ public class GLScanner implements Scanner {
         	nextChar();
         	lexeme.append(lac);
         	    
-        	lexKind = Token.getOperatorKind(lexeme.toString());
+        	lookAheadKind = Token.getOperatorKind(lexeme.toString());
         	
-        	if(lexKind != Kind.UNKNOWN) {
+        	if(lookAheadKind != Kind.UNKNOWN) {
+        		lexKind = lookAheadKind;
         		nextChar();
-        	}
+        	} 
+        	
         } else {
         	nextChar();
         }       
+        
+       
+        if(lexKind == Kind.DOUBLE_QUOTES) {
+        	doubleQuotesNumber++;
+        }
+        
         
         return new Token(lexKind, lexeme.toString(), localization);
 	}
 	
 	
-	private Token readCharacter() {
-		return null;
-	}
-	
 	@Override
 	public Token nextToken() {
-
-		skipBlankChars();
-
+		
+		// Spaces are skipped only outside of double quotes
+		if(!hasDoubleQuotesOpened()) {
+			skipBlankChars(); 
+		}
+		
 		Token token = null;
 		
 		if (lac == EOF_CHAR) {
 			token = new Token(Token.Kind.EOF, localization); 
+		} else
+		if(hasDoubleQuotesOpened()) { 
+			token = readString();
 		} else
 		if (Character.isDigit(lac)) {
 			token = readNumber(); 
 		} else 
 		if (Character.isLetter(lac)) {
 			token = readName();
-		} else			
-		if (lac == '\"') {
-			token = readCharacter();
-		} else {
+		} else {		
 			token = readOperator();
 		}
 			
 		
-		return token;
+		return (lastToken = token);
 	}
 
 }
