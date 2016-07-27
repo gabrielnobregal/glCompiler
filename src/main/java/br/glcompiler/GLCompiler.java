@@ -4,7 +4,7 @@ package br.glcompiler;
  * Hello world!
  *
  */
-public class App 
+public class GLCompiler 
 {
     public static void main( String[] args ) {
        
