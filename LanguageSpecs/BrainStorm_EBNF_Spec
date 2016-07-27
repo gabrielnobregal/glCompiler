@@ -2,7 +2,7 @@
 
 FileStructure = {Import} {Class}
 Import = {"importar" fileName ";"};
-Class =  {"classe" identifier "{" {VarDecl | Method} "}" };
+Class =  {"classe" identifier "{" {VarDecl | ExecutionUnit} "}" };
 VarDecl = Type identifier ";" // Nao se pode inicializar a linguagem fora do método
 Type = identifier["[""]"]
 
@@ -12,7 +12,7 @@ Method = "metodo" identifier "(" [Parameters] ")" CodeBlock
 CodeBlock = "{" {VarDeclIntern | Statement} "}"
 
 //Uma variavel interna deve ser inicializada quando é declarada internamente
-VarDeclIntern = Type identifier ("->" ("instanciar" | "alocar") "("integer")"
+VarDeclIntern = Type identifier ("=" ("instanciar" | "alocar" "("integer")") 
 				| "=" (integer | number | character | text | identifier) ) ";"
 Statement = DesignatorFunc
 
@@ -70,7 +70,7 @@ classe Teste {
 	metodo imprimir() {	
 		inteiro a = 50; // Ao declarar dentro do método tem que definir um valor
 		inteiro b = 20;
-		Base base -> instanciar(Base);
+		Base base = instanciar(Base);
 		base.x = 5;
 		base.y = 10;		
 	}

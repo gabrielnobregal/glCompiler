@@ -15,9 +15,14 @@ public class GLScannerTest extends TestCase {
 		
 		// First set of test		
 		logger.info("===Basic statement test");
-		tokenSetAssert(new GLScannerWrapper("se(a   <=  5){}"), Kind.IF, Kind.LEFT_PARENTHESIS, Kind.IDENTIFIER ,Kind.LESS_EQUAL, 
+		tokenSetAssert(new GLScannerWrapper("se(a   <=  5){}"), Kind.IF, Kind.LEFT_PARENTHESIS, Kind.IDENTIFIER, Kind.LESS_EQUAL, 
 															 	Kind.NUMBER, Kind.RIGHT_PARENTHESIS, 
 															 	Kind.LEFT_BRACE, Kind.RIGHT_BRACE );
+		
+		// Create new instance and reference var
+		logger.info("===Creating new instance");
+		tokenSetAssert(new GLScannerWrapper("A\t\t    a = instancia(A)"),   Kind.IDENTIFIER, Kind.IDENTIFIER, Kind.ASSIGN, Kind.NEW, Kind.LEFT_PARENTHESIS,
+																   			Kind.IDENTIFIER, Kind.RIGHT_PARENTHESIS);		
 		
 		// Full simple valid program	
 		logger.info("===Full program test");
@@ -46,6 +51,19 @@ public class GLScannerTest extends TestCase {
 											);
 		
 	}
+	
+	@Test
+	public void testAssigments() {
+		
+		logger.info("===Basic arithmetic");
+		tokenSetAssert(new GLScannerWrapper("inteiro\t\t   a = a * b + 5 +(x)*y/2  ;"),
+											Kind.INTEGER, Kind.IDENTIFIER, Kind.ASSIGN,
+											Kind.IDENTIFIER, Kind.TIMES, Kind.IDENTIFIER, 
+											Kind.PLUS, Kind.NUMBER, Kind.PLUS, 
+											Kind.LEFT_PARENTHESIS, Kind.IDENTIFIER, Kind.RIGHT_PARENTHESIS,
+											Kind.TIMES, Kind.IDENTIFIER, Kind.SLASH, Kind.NUMBER, Kind.SEMICOLON);		
+		
+	}	
 	
 	
 	private void tokenSetAssert(GLScanner scanner, Kind ... tokenKinds) {		
