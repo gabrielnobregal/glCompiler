@@ -1,6 +1,6 @@
 ==glLanguage - Grammar Specs==
 
-FileStructure = {Import} {Class}
+Program = {importSource} {classDecl}
 Import = {"importar" fileName ";"};
 Class =  {"classe" identifier "{" {VarDecl | ExecutionUnit} "}" };
 VarDecl = Type identifier ";" // Nao se pode inicializar a linguagem fora do método

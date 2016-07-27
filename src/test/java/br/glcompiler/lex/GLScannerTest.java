@@ -21,7 +21,8 @@ public class GLScannerTest extends TestCase {
 		
 		// Create new instance and reference var
 		logger.info("===Creating new instance");
-		tokenSetAssert(new GLScannerWrapper("A\t\t    a = instancia(A)"),   Kind.IDENTIFIER, Kind.IDENTIFIER, Kind.ASSIGN, Kind.NEW, Kind.LEFT_PARENTHESIS,
+		tokenSetAssert(new GLScannerWrapper("A\t\t    a = instanciar(A)"),  Kind.IDENTIFIER, Kind.IDENTIFIER, Kind.ASSIGN, Kind.INSTANTIATE, 
+																			Kind.LEFT_PARENTHESIS,
 																   			Kind.IDENTIFIER, Kind.RIGHT_PARENTHESIS);		
 		
 		// Full simple valid program	

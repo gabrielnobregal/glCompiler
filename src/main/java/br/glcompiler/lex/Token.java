@@ -21,7 +21,7 @@ public class Token {
         CHARACTER("literal_character", LexGroup.BASIC),STRING("literal_string", LexGroup.BASIC),
         
         // keywords
-        CLASS("classe", LexGroup.KEYWORD), ELSE("senao", LexGroup.KEYWORD), IF("se", LexGroup.KEYWORD), NEW("new", LexGroup.KEYWORD), 
+        CLASS("classe", LexGroup.KEYWORD), ELSE("senao", LexGroup.KEYWORD), IF("se", LexGroup.KEYWORD), INSTANTIATE("instanciar", LexGroup.KEYWORD), 
         RETURN("retornar", LexGroup.KEYWORD), WHILE("enquanto", LexGroup.KEYWORD), IMPORT("importar", LexGroup.KEYWORD),
         INTEGER("inteiro", LexGroup.KEYWORD), TEXT("texto", LexGroup.KEYWORD), FLOAT("decimal", LexGroup.KEYWORD),
         METHOD("metodo", LexGroup.KEYWORD),
