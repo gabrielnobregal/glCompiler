@@ -24,7 +24,7 @@ public class Token {
         CLASS("classe", LexGroup.KEYWORD), ELSE("senao", LexGroup.KEYWORD), IF("se", LexGroup.KEYWORD), INSTANTIATE("instanciar", LexGroup.KEYWORD), 
         RETURN("retornar", LexGroup.KEYWORD), WHILE("enquanto", LexGroup.KEYWORD), IMPORT("importar", LexGroup.KEYWORD),
         INTEGER("inteiro", LexGroup.KEYWORD), TEXT("texto", LexGroup.KEYWORD), FLOAT("decimal", LexGroup.KEYWORD),
-        METHOD("metodo", LexGroup.KEYWORD),
+        METHOD("metodo", LexGroup.KEYWORD), FUNCTION("funcao", LexGroup.KEYWORD),
         
         // operators
         PLUS("+", LexGroup.OPERATOR), MINUS("-", LexGroup.OPERATOR), TIMES("*", LexGroup.OPERATOR), SLASH("/", LexGroup.OPERATOR), 
@@ -33,7 +33,7 @@ public class Token {
         GREATER_EQUAL(">=", LexGroup.OPERATOR), ASSIGN("=", LexGroup.OPERATOR), SEMICOLON(";", LexGroup.OPERATOR), COMMA(",", LexGroup.OPERATOR),
         PERIOD(".", LexGroup.OPERATOR), LEFT_PARENTHESIS("(", LexGroup.OPERATOR), RIGHT_PARENTHESIS(")", LexGroup.OPERATOR), 
         LEFT_BRACKET("[", LexGroup.OPERATOR), RIGHT_BRACKET("]", LexGroup.OPERATOR), LEFT_BRACE("{", LexGroup.OPERATOR), 
-        RIGHT_BRACE("}", LexGroup.OPERATOR), DOUBLE_QUOTES("\"", LexGroup.OPERATOR);
+        RIGHT_BRACE("}", LexGroup.OPERATOR), DOUBLE_QUOTES("\"", LexGroup.OPERATOR), COLON(":", LexGroup.OPERATOR);
 		
 		private String value;
 		private LexGroup group;
@@ -97,8 +97,16 @@ public class Token {
 
 	public void setKind(Kind kind) {
 		this.kind = kind;
-	}
+	}	
 	
+	public Localization getLocalization() {
+		return localization;
+	}
+
+	public void setLocalization(Localization localization) {
+		this.localization = localization;
+	}
+
 	public static Kind getKeywordKind(String lexeme) {
 		return keywordMap.containsKey(lexeme) ? keywordMap.get(lexeme) : Kind.IDENTIFIER; 
 	}

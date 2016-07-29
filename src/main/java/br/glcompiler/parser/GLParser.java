@@ -1,63 +1,129 @@
 package br.glcompiler.parser;
 
-import br.glcompiler.lex.GLScannerWrapper;
+import br.glcompiler.MessageManager;
+import br.glcompiler.MessageType;
 import br.glcompiler.lex.Scanner;
 import br.glcompiler.lex.Token;
 import static br.glcompiler.lex.Token.*;
 
-public class GLParser implements Parser {
+import java.util.List;
 
-	private Token currentToken;
-	private Token.Kind currentKind;
+public class GLParser implements Parser {
 	
-	private Token laToken; //lookahead token
+	private Token token; //currentToken		
+	private Token lookaheadToken; //lookahead token
 	private Scanner scanner;
 	
+	private MessageManager messageManager;
+	
 	public GLParser(Scanner scanner) {
+		messageManager = new MessageManager("en", "US"); // TODO: make this configurable
+		
 		this.scanner = scanner;
+		token = lookaheadToken = new Token();
+		nextToken();		
 	}	
 	
-	private void nextToken() {
-		currentToken = laToken;
-		laToken = scanner.nextToken();
-		currentKind = laToken.getKind();
+	@Override
+	public List<String> getErrors() {
+		
+		return null;
 	}
 	
-	private boolean ifKindNotMatch(Kind kind, String message) {
-		if(currentKind != kind) {
-			System.out.println("Error detected: expected '" + Kind.CLASS.getValue() + "' but found '" + currentKind.getValue() + "'" +  message);
-			return true;
+	private Token getToken() {
+		return token;
+	}
+	
+	private Token.Kind getKind()  {
+		return token.getKind();
+	}
+	
+	private Token getLookaheadToken() {
+		return lookaheadToken;
+	}
+	
+	private Token.Kind getLookaheadKind()  {
+		return lookaheadToken.getKind();
+	}
+		
+	private void nextToken() {
+		token = lookaheadToken;
+		lookaheadToken = scanner.nextToken();
+	}
+	
+	private void error(MessageHelper message) {
+		System.err.println(messageManager.getErrorMessage(message.type, getToken().getLocalization(), message.parameters));
+	}
+	
+	class MessageHelper {
+		public MessageType type;
+		public String parameters[];
+		
+		public MessageHelper(MessageType type, String ... parameters) {
+			this.type = type;
+			this.parameters = parameters;
 		}
-		return false;
+	}
+	
+	
+	private boolean tokenMatch(MessageHelper message, Token.Kind... kind) {
+		error(message);
+       boolean match = tokenMatch(kind);
+       if(!match) error(message);
+       return match;
+    }
+	
+	private boolean tokenMatch(Token.Kind... kind) {
+		for (Token.Kind k : kind) {
+            if (getToken().getKind() == k) {
+            	nextToken();
+                return true;
+            }
+         }
+		
+		return false;		
 	}
 	
 	@Override
-	public void parseProgram() {	
+	public void parseProgram() {
+		nextToken();
 		program();
 	}
 	
 	public void program() {
 		
-		while(currentKind == Kind.IMPORT) {
-			importSource();
-			nextToken();
-		}		
-		
-		ifKindNotMatch(Kind.CLASS, "" );
-		
-		while(currentKind == Kind.CLASS) {
-			classDecl();
-			nextToken();
+		while(tokenMatch(Kind.IMPORT)) {
+			importSource();			
 		}
+		
+		boolean classExists = false;
+		
+		while(getKind() == Kind.CLASS) {
+			classDecl();		
+			classExists = true;
+		}
+		
 	}
 	
 	public void importSource() {
 		
+		//nextToken();
+		tokenMatch(new MessageHelper(MessageType.NO_CLASS_DECLARED), Kind.DOUBLE_QUOTES); 
+		
+		nextToken();
+		//tokenMatch("Expected local filename to defining source name.", Kind.TEXT);
+		
+		nextToken();
+		//tokenMatch("Expected \"(double quotes) to enclose a source name.", Kind.DOUBLE_QUOTES);	
+		
+		nextToken();
 	}
 	
 	public void classDecl() {
 		
 	}
+
+	
 	
 	
 	

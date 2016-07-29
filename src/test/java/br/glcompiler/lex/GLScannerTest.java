@@ -51,6 +51,17 @@ public class GLScannerTest extends TestCase {
 											Kind.RIGHT_BRACE, Kind.RIGHT_BRACE
 											);
 		
+		
+		logger.info("===Function test");
+		tokenSetAssert(new GLScannerWrapper("funcao somar(inteiro a, inteiro b) : inteiro { " +
+											"retornar a+b; " +
+											"}"),
+											Kind.FUNCTION, Kind.IDENTIFIER, Kind.LEFT_PARENTHESIS, Kind.INTEGER, Kind.IDENTIFIER, Kind.COMMA,
+											Kind.INTEGER, Kind.IDENTIFIER, Kind.RIGHT_PARENTHESIS, Kind.COLON, Kind.INTEGER, Kind.LEFT_BRACE,
+											Kind.RETURN, Kind.IDENTIFIER, Kind.PLUS, Kind.IDENTIFIER, Kind.SEMICOLON,
+											Kind.RIGHT_BRACE
+											);
+		
 	}
 	
 	@Test

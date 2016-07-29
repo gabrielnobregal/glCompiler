@@ -1,7 +1,7 @@
 ==glLanguage - Grammar Specs==
 
 Program = {importSource} {classDecl}
-Import = {"importar" fileName ";"};
+Import = {"importar" fileName ";"ra};
 Class =  {"classe" identifier "{" {VarDecl | ExecutionUnit} "}" };
 VarDecl = Type identifier ";" // Nao se pode inicializar a linguagem fora do método
 Type = identifier["[""]"]
