@@ -1,8 +1,8 @@
 package br.glcompiler.parser;
 
-import java.util.List;
+import br.glcompiler.message.CompilerMessageLog;
 
 public interface Parser {	
 	public abstract void parseProgram();
-	public abstract List<String> getErrors();
+	public CompilerMessageLog getMessageLog();
 }

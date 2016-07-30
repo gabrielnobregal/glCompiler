@@ -1,9 +1,12 @@
 package br.glcompiler.parser;
 
-import br.glcompiler.MessageManager;
-import br.glcompiler.MessageType;
 import br.glcompiler.lex.Scanner;
 import br.glcompiler.lex.Token;
+import br.glcompiler.message.CompilerMessageI18N;
+import br.glcompiler.message.CompilerMessageLog;
+import br.glcompiler.message.CompilerMessageLogList;
+import br.glcompiler.message.MessageType;
+
 import static br.glcompiler.lex.Token.*;
 
 import java.util.List;
@@ -14,10 +17,12 @@ public class GLParser implements Parser {
 	private Token lookaheadToken; //lookahead token
 	private Scanner scanner;
 	
-	private MessageManager messageManager;
+	private CompilerMessageI18N externalMessage;
+	private CompilerMessageLog messageLog;
 	
 	public GLParser(Scanner scanner) {
-		messageManager = new MessageManager("en", "US"); // TODO: make this configurable
+		externalMessage = new CompilerMessageI18N("en", "US"); // TODO: make this configurable
+		messageLog = new CompilerMessageLogList(); // TODO: This is a compiler property. Inject same instance in all modules
 		
 		this.scanner = scanner;
 		token = lookaheadToken = new Token();
@@ -25,9 +30,8 @@ public class GLParser implements Parser {
 	}	
 	
 	@Override
-	public List<String> getErrors() {
-		
-		return null;
+	public CompilerMessageLog getMessageLog() {		
+		return messageLog;
 	}
 	
 	private Token getToken() {
@@ -49,28 +53,32 @@ public class GLParser implements Parser {
 	private void nextToken() {
 		token = lookaheadToken;
 		lookaheadToken = scanner.nextToken();
+	}	
+	
+	private MessageDefinition defineMessage(MessageType type, String ... parameters) {
+		return new MessageDefinition(type, parameters);
 	}
 	
-	private void error(MessageHelper message) {
-		System.err.println(messageManager.getErrorMessage(message.type, getToken().getLocalization(), message.parameters));
-	}
-	
-	class MessageHelper {
+	class MessageDefinition {
 		public MessageType type;
 		public String parameters[];
 		
-		public MessageHelper(MessageType type, String ... parameters) {
+		public MessageDefinition(MessageType type, String ... parameters) {
 			this.type = type;
 			this.parameters = parameters;
 		}
 	}
 	
 	
-	private boolean tokenMatch(MessageHelper message, Token.Kind... kind) {
-		error(message);
-       boolean match = tokenMatch(kind);
-       if(!match) error(message);
-       return match;
+	private boolean tokenMatch(MessageDefinition messageDefinition, Token.Kind ... kind) {			
+       boolean match = tokenMatch(kind) ;
+       
+       if(!match) {
+    	   messageLog.addMessage(externalMessage.getErrorMessage(messageDefinition.type, token.getLocalization(), messageDefinition.parameters), 
+    			   				 messageDefinition.type, token);       
+       }
+       
+       return match;       
     }
 	
 	private boolean tokenMatch(Token.Kind... kind) {
@@ -108,7 +116,7 @@ public class GLParser implements Parser {
 	public void importSource() {
 		
 		//nextToken();
-		tokenMatch(new MessageHelper(MessageType.NO_CLASS_DECLARED), Kind.DOUBLE_QUOTES); 
+		tokenMatch(defineMessage(MessageType.NO_CLASS_DECLARED), Kind.DOUBLE_QUOTES); 
 		
 		nextToken();
 		//tokenMatch("Expected local filename to defining source name.", Kind.TEXT);

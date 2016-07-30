@@ -3,7 +3,6 @@ package br.glcompiler.lex;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import org.apache.log4j.Logger;
 import br.glcompiler.lex.Token.Kind;
 import static br.glcompiler.lex.Token.*;
 
