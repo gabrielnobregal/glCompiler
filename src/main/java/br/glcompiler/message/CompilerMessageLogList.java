@@ -14,8 +14,8 @@ public class CompilerMessageLogList implements CompilerMessageLog {
 	}	
 	
 	@Override
-	public void addMessage(String message, MessageType type, Token token) {
-		messageList.add(new Message(message, type, token));		
+	public void addMessage(String message, MessageType type, Token token,  Token.Kind expectedKind) {
+		messageList.add(new Message(message, type, token, expectedKind));		
 	}
 
 	@Override

@@ -39,8 +39,8 @@ public class ParserTest	extends TestCase {
 		}	
 		
 		private CompilerMessageLog getParserMessages(String sourceCode ) {
-			Scanner scanner = new GLScannerWrapper(sourceCode);
-			Parser glParser = new GLParser(scanner);
+			Scanner glScanner = new GLScannerWrapper(sourceCode);
+			Parser glParser = new GLParser(glScanner);
 			glParser.parseProgram();
 			return glParser.getMessageLog();
 		}
@@ -51,7 +51,14 @@ public class ParserTest	extends TestCase {
 			
 			validateParserErrors(getParserMessages("importar \"teste.gl\" " +
 					  						       " Nova { }"),
-					  					           MessageType.NO_CLASS_DECLARED);			
+					  					           MessageType.NO_CLASS_DECLARED);
+			
+			validateParserErrors(getParserMessages("classe Nova { " +
+													 " inteiro a; " +
+													 " texto str; " +
+													 " real;  " +   	
+													 " }"),
+			           								MessageType.EXPECTED_SYMBOL);		
 			
 		}
 }

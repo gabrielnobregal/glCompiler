@@ -23,7 +23,7 @@ public class Token {
         // keywords
         CLASS("classe", LexGroup.KEYWORD), ELSE("senao", LexGroup.KEYWORD), IF("se", LexGroup.KEYWORD), INSTANTIATE("instanciar", LexGroup.KEYWORD), 
         RETURN("retornar", LexGroup.KEYWORD), WHILE("enquanto", LexGroup.KEYWORD), IMPORT("importar", LexGroup.KEYWORD),
-        INTEGER("inteiro", LexGroup.KEYWORD), TEXT("texto", LexGroup.KEYWORD), FLOAT("decimal", LexGroup.KEYWORD),
+        INTEGER("inteiro", LexGroup.KEYWORD), TEXT("texto", LexGroup.KEYWORD), DOUBLE("real", LexGroup.KEYWORD),
         METHOD("metodo", LexGroup.KEYWORD), FUNCTION("funcao", LexGroup.KEYWORD),
         
         // operators
@@ -50,6 +50,15 @@ public class Token {
 		public LexGroup getGroup() {
 			return group;
 		}
+		
+		public boolean isPrimitiveType() {			
+			return this == Kind.INTEGER || this == Kind.TEXT || this == Kind.DOUBLE;		  
+		}
+		
+		public boolean isExecutionUnit() {			
+			return this == Kind.METHOD || this == Kind.FUNCTION;	  
+		}
+		
     }
 	
 	private final static Map<String, Kind> basicMap = new HashMap<>();
@@ -107,6 +116,11 @@ public class Token {
 		this.localization = localization;
 	}
 
+	public static boolean isPrimitiveType(Token token) {
+		Kind tKind = token.getKind();
+		return tKind == Kind.INTEGER || tKind == Kind.TEXT || tKind == Kind.DOUBLE;		  
+	}
+	
 	public static Kind getKeywordKind(String lexeme) {
 		return keywordMap.containsKey(lexeme) ? keywordMap.get(lexeme) : Kind.IDENTIFIER; 
 	}

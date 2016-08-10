@@ -7,13 +7,15 @@ public class Message {
 	private Token token;
 	private String text;
 	private MessageType type;
+	private Token.Kind expectedTokenKind;
 	
 	
-	public Message(String text, MessageType type, Token token) {
+	public Message(String text, MessageType type, Token token, Token.Kind expectedTokenKind) {
 		super();
 		this.token = token;
 		this.text = text;
 		this.type = type;
+		this.expectedTokenKind = expectedTokenKind;
 	}
 
 	public Token getToken() {
@@ -40,5 +42,13 @@ public class Message {
 		this.type = type;
 	}
 
+	public Token.Kind getExpectedTokenKind() {
+		return expectedTokenKind;
+	}
 
+	protected void setExpectedTokenKind(Token.Kind expectedTokenKind) {
+		this.expectedTokenKind = expectedTokenKind;
+	}
+
+	
 }

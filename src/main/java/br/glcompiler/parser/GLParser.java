@@ -49,48 +49,53 @@ public class GLParser implements Parser {
 	private Token.Kind getLookaheadKind()  {
 		return lookaheadToken.getKind();
 	}
-		
+			
 	private void nextToken() {
 		token = lookaheadToken;
 		lookaheadToken = scanner.nextToken();
-	}	
-	
-	private MessageDefinition defineMessage(MessageType type, String ... parameters) {
-		return new MessageDefinition(type, parameters);
 	}
 	
-	class MessageDefinition {
-		public MessageType type;
-		public String parameters[];
+	private void addMessage(Kind kind, MessageType errorMessageType) {
+		messageLog.addMessage(externalMessage.getErrorMessage(errorMessageType, token.getLocalization(), kind.getValue(), token.getKind().getValue()), 
+  				 errorMessageType, token, kind);  
+	}
 		
-		public MessageDefinition(MessageType type, String ... parameters) {
-			this.type = type;
-			this.parameters = parameters;
-		}
-	}
-	
-	
-	private boolean tokenMatch(MessageDefinition messageDefinition, Token.Kind ... kind) {			
-       boolean match = tokenMatch(kind) ;
+	private boolean tokenMatch(Kind kind, MessageType errorMessageType) {		
        
-       if(!match) {
-    	   messageLog.addMessage(externalMessage.getErrorMessage(messageDefinition.type, token.getLocalization(), messageDefinition.parameters), 
-    			   				 messageDefinition.type, token);       
-       }
-       
-       return match;       
+       if(getToken().getKind() != kind) {
+    	   addMessage(kind, errorMessageType);
+       }   
+   
+       return true;       
     }
 	
-	private boolean tokenMatch(Token.Kind... kind) {
-		for (Token.Kind k : kind) {
-            if (getToken().getKind() == k) {
-            	nextToken();
-                return true;
-            }
-         }
-		
+	private boolean tokenMatch(Token.Kind kind) {
+		 
+		if (getToken().getKind() == kind) {
+			 return true;
+		 }
+		 
 		return false;		
 	}
+	
+	private boolean tokenMatchMoveNext(Kind kind, MessageType errorMessageType) {		
+		if(tokenMatch(kind, errorMessageType)) {
+			nextToken();
+			return true;		
+		}
+		return false;
+	}
+	
+	private boolean tokenMatchMoveNext(Token.Kind kind) {
+		 
+		if(tokenMatch(kind)) {
+			nextToken();
+			return true;
+		}
+		 
+		return false;		
+	}
+	
 	
 	@Override
 	public void parseProgram() {
@@ -98,7 +103,7 @@ public class GLParser implements Parser {
 		program();
 	}
 	
-	public void program() {
+	private void program() {
 		
 		while(tokenMatch(Kind.IMPORT)) {
 			importSource();			
@@ -111,32 +116,49 @@ public class GLParser implements Parser {
 			classExists = true;
 		}
 		
+		if(!classExists) {
+			addMessage(Kind.CLASS, MessageType.NO_CLASS_DECLARED);
+		}		
 	}
 	
-	public void importSource() {
+	private void importSource() {		
+		nextToken();	
 		
-		//nextToken();
-		tokenMatch(defineMessage(MessageType.NO_CLASS_DECLARED), Kind.DOUBLE_QUOTES); 
-		
-		nextToken();
-		//tokenMatch("Expected local filename to defining source name.", Kind.TEXT);
-		
-		nextToken();
-		//tokenMatch("Expected \"(double quotes) to enclose a source name.", Kind.DOUBLE_QUOTES);	
-		
-		nextToken();
+		tokenMatchMoveNext(Kind.DOUBLE_QUOTES, MessageType.EXPECTED_BEGIN_SYMBOL);		
+		tokenMatchMoveNext(Kind.STRING, MessageType.EXPECTED_SYMBOL);		
+		tokenMatchMoveNext(Kind.DOUBLE_QUOTES, MessageType.EXPECTED_END_SYMBOL);		
 	}
 	
-	public void classDecl() {
+	private void classDecl() {
+		nextToken();
+			
+		tokenMatchMoveNext(Kind.IDENTIFIER, MessageType.EXPECTED_IDENTIFIER);
+		
+		if(tokenMatch(Kind.IDENTIFIER)){
+			
+		}
+		
+		tokenMatchMoveNext(Kind.LEFT_BRACE, MessageType.EXPECTED_BEGIN_SYMBOL);	
+		
+		
+		
+		do {
+			Kind k = getToken().getKind();
+			
+			if(k.isPrimitiveType() || k == Kind.IDENTIFIER) {
+				varDecl();
+			} else 
+			if(k.isExecutionUnit()) {
+				executionUnit();
+			}
+		} while(Ó);
+	}	
+	
+	private void varDecl() {
+				
+	}
+	
+	private void executionUnit() {
 		
 	}
-
-	
-	
-	
-	
-	
-	
-		
-
 }

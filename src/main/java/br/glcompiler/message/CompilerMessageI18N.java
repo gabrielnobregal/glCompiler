@@ -18,17 +18,20 @@ public class CompilerMessageI18N implements CompilerMessage {
 	}
 	
 	public String getErrorMessage(MessageType messageType, Localization localization, String ... parameters) {
-		String errorPrefix = MessageFormat.format(messages.getString(MessageType.ERROR_PREFIX.name()), localization.getLine(), localization.getColumn());		
+		String errorPrefix = MessageFormat.format(messages.getString(MessageType.ERROR_PREFIX.name()), 
+												  localization.getLine(), localization.getColumn(), parameters);		
 		return errorPrefix + getMessage(messageType, parameters);			
 	}
 	
 	public String getWarningMessage(MessageType messageType, Localization localization, String ... parameters) {
-		String warnPrefix = MessageFormat.format(messages.getString(MessageType.WARNING_PREFIX.name()), localization.getLine(), localization.getColumn());		
+		String warnPrefix = MessageFormat.format(messages.getString(MessageType.WARNING_PREFIX.name()), 
+												 localization.getLine(), localization.getColumn(), parameters);		
 		return warnPrefix + getMessage(messageType, parameters);			
 	}	
 	
 	public String getInfoMessage(MessageType messageType, Localization localization, String ... parameters) {
-		String infoPrefix = MessageFormat.format(messages.getString(MessageType.INFO_PREFIX.name()), localization.getLine(), localization.getColumn());		
+		String infoPrefix = MessageFormat.format(messages.getString(MessageType.INFO_PREFIX.name()), 
+												 localization.getLine(), localization.getColumn(), parameters);		
 		return infoPrefix + getMessage(messageType, parameters);			
 	}
 }

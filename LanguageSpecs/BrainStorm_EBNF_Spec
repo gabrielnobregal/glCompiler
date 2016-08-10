@@ -2,9 +2,9 @@
 
 Program = {importSource} {classDecl}
 Import = {"importar" fileName ";"ra};
-Class =  {"classe" identifier "{" {VarDecl | ExecutionUnit} "}" };
+classDecl =  {"classe" identifier "{" {VarDecl | ExecutionUnit} "}" };
 VarDecl = Type identifier ";" // Nao se pode inicializar a linguagem fora do método
-Type = identifier["[""]"]
+Type = (inteiro | real | texto) ["[""]"]
 
 ExecutionUnit = (Function | Method)
 Function = "funcao" identifier "(" [Parameters] "):" identifier CodeBlock
@@ -42,7 +42,7 @@ Statement =   Designator "=" Expr ";"
 	    | "lerInteiro" "(" ")" ";"
 	    | "lerTexto" "(" ")" ";"
 	    | "lerCaracter" "(" ")" ";"
-	    | "lerDecimal" "(" ")" ";" // Ponto Flutuante
+	    | "lerReal" "(" ")" ";" // Ponto Flutuante
 	    | "imprimir" "(" Expr ")" 	
 	    | CodeBlock
 
@@ -62,7 +62,7 @@ classe Teste {
 		
 	// Somente declara mas não pode instanciar
 	inteiro[] p;
-	decimal x;
+	real x;
 	caractere[] z;
 	texto k;
 	texto l;
