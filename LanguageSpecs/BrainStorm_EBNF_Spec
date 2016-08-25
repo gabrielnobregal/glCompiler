@@ -14,7 +14,6 @@ CodeBlock = "{" {VarDeclIntern | Statement} "}"
 //Uma variavel interna deve ser inicializada quando é declarada internamente
 VarDeclIntern = Type identifier ("=" ("instanciar" | "alocar" "("integer")") 
 				| "=" (integer | number | character | text | identifier) ) ";"
-Statement = DesignatorFunc
 
 Expr = ["-"] Term {AddOp Term}
 Term = Factor {MulOp Factor}

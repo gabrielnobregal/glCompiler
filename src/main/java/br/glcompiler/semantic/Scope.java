@@ -3,10 +3,12 @@ package br.glcompiler.semantic;
 import java.util.LinkedList;
 import java.util.List;
 
+import br.glcompiler.exceptions.SemanticException;
+
 public class Scope {
 	
 	private Scope outer;
-	private List<Obj> objects;
+	private LinkedList<Obj> objects;
 	private int numVars;
 	private int level;
 	
@@ -40,16 +42,28 @@ public class Scope {
 		this.level = level;
 	}
 	
-	public void insertObj(Obj.Kind kind, String name, ObjStruct objStruct) {
-		 Obj object = new Obj(kind, name, objStruct);
-	        if (kind == Obj.VARIABLE) {
-	            object.adr = scope.nVars;
-	            scope.nVars++;
-	            object.level = scope.level;
-	        }
-		
+	public boolean objectExists(String name) {		
+		return objects.stream().anyMatch(o -> name.equals(o.getName()));
 	}
 	
-	
+	protected Obj insertObject(Scope scope, String identifier, ObjKind objKind, StructKind structKind) throws SemanticException {
+		
+		if(objectExists(identifier)) {
+			throw new SemanticException("Object already exists in scope.");
+		}
+		
+		Obj object = new Obj(identifier, objKind, new ObjStruct(structKind));
+		
+		if (objKind == ObjKind.VARIABLE) {
+            int n = scope.getNumVars();
+			object.setAddress(n);
+            scope.setNumVars(++n);            
+            object.setLevel(scope.getLevel()); 
+        }				
+		
+		objects.add(object);
+		
+		return object;
+	}
 	
 }

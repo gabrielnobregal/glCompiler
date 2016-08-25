@@ -4,21 +4,20 @@ package br.glcompiler.semantic;
 public class ObjStruct {
 	
 	// Any object	
-	private Kind structKind;
+	private StructKind structKind;
 	
 	// For arrays
 	private ObjStruct arrayType;
 	
 	// For classes
 	private int numFields;
-	private Obj field; // acessed field class
+	private Obj field;
 	
-	enum Kind {
-		NONE,
-		INTEGER,
-		TEXT,
-		REAL,
-		CLASS
+	
+	public ObjStruct(StructKind structKind) {
+		super();
+		this.structKind = structKind;
 	}
+	
 
 }

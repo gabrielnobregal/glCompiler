@@ -13,8 +13,9 @@ import org.objectweb.asm.MethodVisitor;
 public class Teste {
 	
 	public static void main(String ... args) throws IOException {
-		ClassWriter cw=new ClassWriter(0);
+		ClassWriter cw=new ClassWriter(ClassWriter.COMPUTE_FRAMES); // Tamanho do frame e da pilha sao calculados automaticamente
 		
+																//Generics
 		cw.visit(V1_7, ACC_PUBLIC+ACC_SUPER, "sample/HelloGen", null, "java/lang/Object", null);
 		
 
@@ -25,7 +26,7 @@ public class Teste {
 			mv.visitVarInsn(ALOAD, 0); //load the first local variable: this
 			mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
 			mv.visitInsn(RETURN);
-			mv.visitMaxs(1,1);
+			mv.visitMaxs(1,1); // Slots na stack e nro de argumentos
 			mv.visitEnd();
 		}
 		

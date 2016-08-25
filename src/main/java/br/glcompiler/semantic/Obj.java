@@ -3,25 +3,25 @@ package br.glcompiler.semantic;
 
 public class Obj {	
 	
-	public Kind kind;    // CONSTANT, VARIABLE, TYPE, METHOD, PROGRAM
-    public String name; // object name
+	private ObjKind kind;    // VARIABLE, TYPE, METHOD
+	
+	private String name; // object name
     
-    public ObjStruct type; // object type
-    public int val;     // CONSTANT: value
+	private ObjStruct struct; // object type
     
-    public int adr;     // VARIABLE, Math: address
-    public int level;   // VARIABLE: declaration level
+	private int val;     // CONSTANT: value
     
-    public int nParams; // METHOD: number of parameters
-    public Obj locals;  // METHOD: parameters and local objects
+	private int address;     // ???VARIABLE, Math: Elementos locais void t(inteiro a, inteiro b)==> adr(a) = 1 e adr(b) = 2 -> pos das vars locais
+	private int level;   // Todo escopo aberto increment - declaration level
+    
+	private int nParams; // METHOD: number of parameters
+	private Obj locals;  // METHOD/Class: parameters and local objects
    
-    
-   
-    public enum Kind {
-    	VARIABLE,
-    	TYPE,
-    	METHOD
-    }	
+    public Obj(String name, ObjKind kind, ObjStruct struct) {
+    	this.name = name;
+    	this.kind = kind;
+    	this.struct = struct;    	
+    }  
 	
 	public String getName() {
 		return name;
@@ -31,12 +31,12 @@ public class Obj {
 		this.name = name;
 	}
 	
-	public ObjType getType() {
-		return type;
+	public ObjStruct getStruct() {
+		return struct;
 	}
 	
-	public void setType(ObjType type) {
-		this.type = type;
+	public void setType(ObjStruct struct) {
+		this.struct = struct;
 	}
 	
 	public int getVal() {
@@ -45,16 +45,16 @@ public class Obj {
 	
 	public void setVal(int val) {
 		this.val = val;
-	}
+	}		
 	
-	public int getAdr() {
-		return adr;
+	public int getAddress() {
+		return address;
 	}
-	
-	public void setAdr(int adr) {
-		this.adr = adr;
+
+	public void setAddress(int address) {
+		this.address = address;
 	}
-	
+
 	public int getLevel() {
 		return level;
 	}

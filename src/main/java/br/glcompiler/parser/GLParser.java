@@ -6,6 +6,7 @@ import br.glcompiler.message.CompilerMessageI18N;
 import br.glcompiler.message.CompilerMessageLog;
 import br.glcompiler.message.CompilerMessageLogList;
 import br.glcompiler.message.MessageType;
+import br.glcompiler.semantic.SymbolTable;
 
 import static br.glcompiler.lex.Token.*;
 
@@ -17,13 +18,18 @@ public class GLParser implements Parser {
 	private Token lookaheadToken; //lookahead token
 	private Scanner scanner;
 	
+	private SymbolTable symbolTable;
+	
+	
 	private CompilerMessageI18N externalMessage;
 	private CompilerMessageLog messageLog;
 	
 	public GLParser(Scanner scanner) {
 		externalMessage = new CompilerMessageI18N("en", "US"); // TODO: make this configurable
 		messageLog = new CompilerMessageLogList(); // TODO: This is a compiler property. Inject same instance in all modules
+		symbolTable = new SymbolTable();
 		
+		// Init scannet and lookahead
 		this.scanner = scanner;
 		token = lookaheadToken = new Token();
 		nextToken();		
@@ -131,16 +137,13 @@ public class GLParser implements Parser {
 	
 	private void classDecl() {
 		nextToken();
-			
-		tokenMatchMoveNext(Kind.IDENTIFIER, MessageType.EXPECTED_IDENTIFIER);
+					
+		if(tokenMatchMoveNext(Kind.IDENTIFIER, MessageType.EXPECTED_IDENTIFIER)) {		
+			symbolTable.openScope();			
+			symbolTable.insertClass(token.getLexeme());			
+		}		
 		
-		if(tokenMatch(Kind.IDENTIFIER)){
-			
-		}
-		
-		tokenMatchMoveNext(Kind.LEFT_BRACE, MessageType.EXPECTED_BEGIN_SYMBOL);	
-		
-		
+		tokenMatchMoveNext(Kind.LEFT_BRACE, MessageType.EXPECTED_BEGIN_SYMBOL);			
 		
 		do {
 			Kind k = getToken().getKind();
@@ -151,8 +154,11 @@ public class GLParser implements Parser {
 			if(k.isExecutionUnit()) {
 				executionUnit();
 			}
-		} while(Ó);
-	}	
+			
+		} while(tokenMatchMoveNext(Kind.LEFT_BRACE));
+		
+		
+	}
 	
 	private void varDecl() {
 				

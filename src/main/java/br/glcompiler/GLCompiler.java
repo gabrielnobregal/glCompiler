@@ -15,8 +15,6 @@ public class GLCompiler {
 		
 	private CompilerMessageLog messageLog;	
 	
-	
-	
     public static void main( String[] args ) {
        
     }
