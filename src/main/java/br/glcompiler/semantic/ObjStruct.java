@@ -7,7 +7,7 @@ public class ObjStruct {
 	private StructKind structKind;
 	
 	// For arrays
-	private ObjStruct arrayType;
+	private ObjStruct arrayType; ////????
 	
 	// For classes
 	private int numFields;

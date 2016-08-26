@@ -1,11 +1,13 @@
 package br.glcompiler.parser;
 
+import br.glcompiler.codegen.ByteCodeClassWriter;
 import br.glcompiler.lex.Scanner;
 import br.glcompiler.lex.Token;
 import br.glcompiler.message.CompilerMessageI18N;
 import br.glcompiler.message.CompilerMessageLog;
 import br.glcompiler.message.CompilerMessageLogList;
 import br.glcompiler.message.MessageType;
+import br.glcompiler.semantic.Obj;
 import br.glcompiler.semantic.SymbolTable;
 
 import static br.glcompiler.lex.Token.*;
@@ -19,6 +21,7 @@ public class GLParser implements Parser {
 	private Scanner scanner;
 	
 	private SymbolTable symbolTable;
+	private ByteCodeClassWriter classWriter; 
 	
 	
 	private CompilerMessageI18N externalMessage;
@@ -137,34 +140,73 @@ public class GLParser implements Parser {
 	
 	private void classDecl() {
 		nextToken();
-					
+		
+		Obj classObject = null;
+		
 		if(tokenMatchMoveNext(Kind.IDENTIFIER, MessageType.EXPECTED_IDENTIFIER)) {		
 			symbolTable.openScope();			
-			symbolTable.insertClass(token.getLexeme());			
-		}		
+			classObject = symbolTable.insertClass(token.getLexeme());
+			classWriter = ByteCodeClassWriter.createClass(token.getLexeme());
+		}	else {
+			return;
+		}
 		
-		tokenMatchMoveNext(Kind.LEFT_BRACE, MessageType.EXPECTED_BEGIN_SYMBOL);			
+		tokenMatchMoveNext(Kind.LEFT_BRACE, MessageType.EXPECTED_BEGIN_SYMBOL);		
 		
-		do {
+		while(!tokenMatchMoveNext(Kind.RIGHT_BRACE, MessageType.EXPECTED_END_SYMBOL)) {
+			
 			Kind k = getToken().getKind();
 			
 			if(k.isPrimitiveType() || k == Kind.IDENTIFIER) {
-				varDecl();
+				varDecl(classObject);
 			} else 
 			if(k.isExecutionUnit()) {
-				executionUnit();
+				executionUnit(classObject);
+			} else
+			if(!tokenMatchMoveNext(Kind.EOF, MessageType.UNEXPECTED_END_OF_FILE)) {
+				break;
 			}
 			
-		} while(tokenMatchMoveNext(Kind.LEFT_BRACE));
+		} 
+		
+		symbolTable.closeScope();		
+	}
+	/*
+	 * VarDecl = Type identifier ";" // Nao se pode inicializar a linguagem fora do método
+	 * Type = (inteiro | real | texto) ["[""]"]
+	 */
+	private void varDecl(Obj obj) {		
+		
+		Kind varType = getToken().getKind();
+		
+		if(varType.isPrimitiveType()) {			
+			
+			boolean isArray = false;			
+			
+			if(tokenMatchMoveNext(Kind.LEFT_BRACKET, MessageType.EXPECTED_BEGIN_SYMBOL)) {
+				tokenMatchMoveNext(Kind.RIGHT_BRACKET, MessageType.EXPECTED_BEGIN_SYMBOL);
+				isArray = true;
+			}
+			
+			if(tokenMatchMoveNext(Kind.IDENTIFIER, MessageType.EXPECTED_BEGIN_SYMBOL)) {
+				//symbolTable.insertVariable(token.getLexeme(), varType, isArray)
+			}			
+			
+			tokenMatchMoveNext(Kind.SEMICOLON, MessageType.EXPECTED_END_SYMBOL);
+			
+		} else {
+			
+			
+			
+			
+		}
+		
+		
 		
 		
 	}
 	
-	private void varDecl() {
-				
-	}
-	
-	private void executionUnit() {
+	private void executionUnit(Obj obj) {
 		
 	}
 }

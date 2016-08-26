@@ -15,7 +15,8 @@ public enum MessageType {
 	EXPECTED_IDENTIFIER,
 	
 	// Specific messages
-	NO_CLASS_DECLARED
+	NO_CLASS_DECLARED,
+	UNEXPECTED_END_OF_FILE
 	
 	
 }

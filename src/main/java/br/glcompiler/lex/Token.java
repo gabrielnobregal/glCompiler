@@ -17,7 +17,7 @@ public class Token {
 	
 	public static enum Kind {
 		// basic
-        UNKNOWN("na", LexGroup.BASIC), EOF("eof", LexGroup.BASIC), IDENTIFIER("identifier", LexGroup.BASIC), NUMBER("literal_number", LexGroup.BASIC), 
+        UNKNOWN("na", LexGroup.BASIC), EOF("\u001a", LexGroup.BASIC), IDENTIFIER("identifier", LexGroup.BASIC), NUMBER("literal_number", LexGroup.BASIC), 
         CHARACTER("literal_character", LexGroup.BASIC),STRING("literal_string", LexGroup.BASIC),
         
         // keywords
