@@ -2,6 +2,7 @@ package br.glcompiler.semantic;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import br.glcompiler.exceptions.SemanticException;
 
@@ -42,14 +43,18 @@ public class Scope {
 		this.level = level;
 	}
 	
-	public boolean objectExists(String name) {		
-		return objects.stream().anyMatch(o -> name.equals(o.getName()));
+	public boolean objectExists(String identifier) {		
+		return objects.stream().anyMatch(o -> identifier.equals(o.getName()));
 	}
 	
+	protected Optional<Obj> findObject(String identifier) {
+		return objects.stream().filter(o -> identifier.equals(o.getName())).findFirst();
+	}
+		
 	protected Obj insertObject(Scope scope, String identifier, ObjKind objKind, StructKind structKind) throws SemanticException {
 		
 		if(objectExists(identifier)) {
-			throw new SemanticException("Object already exists in scope.");
+			throw new SemanticException("Object already exists in scope."); // TODO: Change return to Optional
 		}
 		
 		Obj object = new Obj(identifier, objKind, new ObjStruct(structKind));
