@@ -1,6 +1,6 @@
 package br.glcompiler.parser;
 
-import br.glcompiler.codegen.ByteCodeClassWriter;
+import br.glcompiler.codegen.BCClassWriter;
 import br.glcompiler.lex.Scanner;
 import br.glcompiler.lex.Token;
 import br.glcompiler.message.CompilerMessageI18N;
@@ -21,7 +21,7 @@ public class GLParser implements Parser {
 	private Scanner scanner;
 	
 	private SymbolTable symbolTable;
-	private ByteCodeClassWriter classWriter; 
+	private BCClassWriter classWriter; 
 	
 	
 	private CompilerMessageI18N externalMessage;
@@ -146,8 +146,8 @@ public class GLParser implements Parser {
 		if(tokenMatchMoveNext(Kind.IDENTIFIER, MessageType.EXPECTED_IDENTIFIER)) {		
 			symbolTable.openScope();			
 			classObject = symbolTable.insertClass(token.getLexeme());
-			classWriter = ByteCodeClassWriter.createClass(token.getLexeme());
-		}	else {
+			classWriter = BCClassWriter.createClass(token.getLexeme());
+		} else {
 			return;
 		}
 		
